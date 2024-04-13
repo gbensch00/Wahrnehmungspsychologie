@@ -1,0 +1,16 @@
+{
+    "ID": 1,
+    "Round_1": {
+        "Color_Searched": "str",
+        "Shape_Searched": "str",
+        "Reactiontime": "int"
+    },
+    "Round_2": {
+        "Color_Searched": "str",
+        "Shape_Searched": "str",
+        "Reactiontime": "int"
+    },
+    "Reactiontime": "int",
+    "Reactionavg": "int",
+    "Color": "str"
+}
