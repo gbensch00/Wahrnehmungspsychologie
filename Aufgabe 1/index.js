@@ -180,44 +180,31 @@ function summarizeData(data) {
   let longestReactionTime = 0;
   let shortestReactionTime = 0;
 
-  // Iterate over each experiment
+
   for (let experiment of data) {
-    // Iterate over each round in the experiment
+
     for (let round of experiment.rounds) {
-        // Check if the round was successful
         console.log("round success: " + round.success);
       if (round.success === true) {
         successfulRounds++;
       }
-
-      // Add reaction time to total
       totalReactionTime += round.reactionTime;
 
-      // Update longest reaction time if necessary
       if (round.reactionTime > longestReactionTime) {
         longestReactionTime = round.reactionTime;
       }
-
-      // Update shortest reaction time if necessary
-        if (round.reactionTime < shortestReactionTime) {
+      if (round.reactionTime < shortestReactionTime) {
             shortestReactionTime = round.reactionTime;
-        }
+      }
     }
   }
     
-  let averageReactionTime = totalReactionTime / 4;
+  let averageReactionTime = totalReactionTime / rounds.length;
 
   console.log("Analysis of Experiment Data:");
-    console.log("Successful Rounds:", successfulRounds);
-    console.log("Total Reaction Time:", totalReactionTime.toFixed(2) + "s");
+  console.log("Successful Rounds:", successfulRounds);
+  console.log("Total Reaction Time:", totalReactionTime.toFixed(2) + "s");
   console.log("Average Reaction Time:", averageReactionTime.toFixed(2) + "s");
   console.log("Longest Reaction Time:", longestReactionTime.toFixed(2) + "s");
   console.log("Shortest Reaction Time:", shortestReactionTime.toFixed(2) + "s");
 }
-function measureReactionTime() {
-  // Placeholder logic to measure reaction time
-  // Return a random reaction time for demonstration purposes
-  return Math.floor(Math.random() * 5000); // Random reaction time between 0 and 5000 milliseconds
-}
-
-
