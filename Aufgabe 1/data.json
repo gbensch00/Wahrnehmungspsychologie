@@ -1,16 +1,21 @@
 {
-    "ID": 1,
-    "Round_1": {
-        "Color_Searched": "str",
-        "Shape_Searched": "str",
-        "Reactiontime": "int"
+    "id": 1,
+    "round_1": {
+        "grid_size": 8,
+        "color_searched": "black",
+        "direction_searched": "right",
+        "reactiontime": "int"
     },
-    "Round_2": {
-        "Color_Searched": "str",
-        "Shape_Searched": "str",
-        "Reactiontime": "int"
+    "round_2": {
+        "grid_size": 8,
+        "color_searched": "red",
+        "direction_searched": "up",
+        "reactiontime": "int"
     },
-    "Reactiontime": "int",
-    "Reactionavg": "int",
-    "Color": "str"
+    "round_3": {
+        "grid_size": 8,
+        "color_searched": "red",
+        "direction_searched": "down",
+        "reactiontime": "int"
+    }
 }
