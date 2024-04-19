@@ -1,24 +1,49 @@
 let grid = document.getElementById("grid");
 
 // 1 Runde alles schwarz
-let round_1 = {"direction": "left", "color": "black", "searched_color": "black", "grid_size": 4, "positionX": 3, "positionY": 2}
+let round_1 = {"direction": "left", "color": ["black"], "searched_color": "black", "grid_size": 10, "positionX": 3, "positionY": 2}
 // 2 Runde Farben nah beieinander, es darf nur eine Kombination von Farbe + Richtung richtig sein
-let round_2 = {"direction": "left", "color": "pink", "searched_color": "red", "grid_size": 5, "positionX": 3, "positionY": 2}
-// 3 Runde wie Runde 2 aber Starker Farbkontrast
-let round_3 = {"direction": "left", "color": "green", "searched_color": "red", "grid_size": 6, "positionX": 3, "positionY": 2}
+let round_2 = {"direction": "down", "color": ["darkred"], "searched_color": "red", "grid_size": 10, "positionX": 4, "positionY": 3}
 
-let rounds = [round_1, round_2, round_3]
+let round_3 = {"direction": "up", "color": ["darkred", "red"], "searched_color": "red", "grid_size": 10, "positionX": 1, "positionY": 4}
+// 3 Runde wie Runde 2 aber Starker Farbkontrast
+let round_4 = {"direction": "right", "color": ["green", "blue", "yellow", "red"], "searched_color": "red", "grid_size": 10, "positionX": 4, "positionY": 3}
+
+let rounds = [round_1, round_2, round_3, round_4]
 
 let current_round = 0;
 
 setUpRound(rounds[current_round])
 
 function setUpRound(round) {
+    let searched_triangle = document.getElementById("searched-triangle");
+    searched_triangle.style.rotate = getDegree(round.direction) + "deg";
+    searched_triangle.style.fill = round.searched_color;
     while (grid.firstChild) {
         grid.removeChild(grid.firstChild);
     }
+    let timer = document.getElementById("timer");
+    timer.style.display = "block";
+    let count = 3;
 
-    generateGrid(round);
+    function updateTimer() {
+        timer.innerHTML = count.toString();
+        if (count === 0) {
+            timer.style.display = "none";
+        }
+
+        count--;
+
+        if (count >= 0) {
+            setTimeout(updateTimer, 1000);
+        }
+    }
+
+    updateTimer();
+
+    setTimeout(() => {
+        generateGrid(round);
+    }, 4000)
 }
 
 function generateGrid(round) {
@@ -28,7 +53,7 @@ function generateGrid(round) {
         grid.appendChild(row)
         for (let x = 0; x < round.grid_size; x++) {
             let isCorrectPosition = y === round.positionY && x === round.positionX
-            let cell = generateCell(isCorrectPosition, round.direction);
+            let cell = generateCell(round, isCorrectPosition);
             row.appendChild(cell);
         }
     }
@@ -48,27 +73,36 @@ function handleClick(event, isCorrectPosition) {
     }
 }
 
-function generateCell(isCorrectPosition, directionToAvoid) {
+function generateCell(round, isCorrectPosition) {
     const cell = document.createElement("div");
     cell.addEventListener("click", function (event) {handleClick(event, isCorrectPosition)});
     const svg = createSvg();
     if (isCorrectPosition) {
         // die korrekte Zelle
-        svg.style.rotate = getDegree(directionToAvoid).toString() + "deg";
+        svg.style.rotate = getDegree(round.direction).toString() + "deg";
+        svg.style.fill = round.searched_color;
     } else {
-        svg.style.rotate = getRandomDirection(directionToAvoid).toString() + "deg";
+        let randomValues = getRandomDirection(round.direction, round.searched_color, round.color);
+        svg.style.rotate = randomValues[0].toString() + "deg";
+        svg.style.fill = randomValues[1];
     }
     cell.classList.add("cell");
     cell.appendChild(svg);
     return cell;
 }
 
-function getRandomDirection(directionToAvoid) {
+function getRandomDirection(directionToAvoid, searched_color, color) {
     const directions = ["left", "up", "right", "down"];
-    const filteredDirections = directions.filter(direction => direction !== directionToAvoid);
-    let randomIndex = Math.floor(Math.random() * filteredDirections.length);
-    let direction = filteredDirections[randomIndex];
-    return getDegree(direction);
+    //const filteredDirections = directions.filter(direction => direction !== directionToAvoid);
+    let randomIndex = Math.floor(Math.random() * directions.length);
+    let direction = directions[randomIndex];
+    let randomColorValue = Math.floor(Math.random() * (color.length - 1 + 1));
+    let randomColor = color[randomColorValue];
+    if (directionToAvoid === direction && randomColor === searched_color) {
+        return getRandomDirection(directionToAvoid, searched_color, color);
+    } else {
+        return [getDegree(direction), randomColor];
+    }
 }
 
 function getDegree(direction) {
