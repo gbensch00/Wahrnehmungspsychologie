@@ -22,7 +22,7 @@ let current_round = 0;
 setUpRound(rounds[current_round])
 
 function setUpRound(round) {
-    
+
     let searched_triangle = document.getElementById("searched-triangle");
     searched_triangle.style.rotate = getDegree(round.direction) + "deg";
     searched_triangle.style.fill = round.searched_color;
@@ -36,7 +36,7 @@ function setUpRound(round) {
     function updateTimer() {
         timer.innerHTML = count.toString();
         if (count === 0) {
-            timer.style.display = "none"; 
+            timer.style.display = "none";
         }
         count--;
         if (count >= 0) {
@@ -47,10 +47,23 @@ function setUpRound(round) {
     start = Date.now();
     setTimeout(() => {
         generateGrid(round);
-    }, 4000)
+    }, 3050)
 }
 
-
+function endExperiment() {
+    while (grid.firstChild) {
+        grid.removeChild(grid.firstChild);
+    }
+    let info_text = document.getElementById("info-text");
+    info_text.innerText = "Experiment Abgeschlossen";
+    let searched_triangle = document.getElementById("searched-triangle");
+    searched_triangle.style.display = "none";
+    let info = document.getElementById("infoContainer");
+    let message = document.createElement("div");
+    message.innerText = "Danke für Ihre Teilnahme!";
+    info.append(message);
+    info.style.flexDirection = "column";
+}
 
 function generateGrid(round) {
     for (let y = 0; y < round.grid_size; y++) {
@@ -82,6 +95,8 @@ async function handleClick(event, isCorrectPosition) {
         //show results;
         console.log("experiment done!");
         summarizeData(experimentData);
+        endExperiment();
+
     }
 }
 
@@ -154,13 +169,13 @@ function collectData(round) {
   let time = (((end - start) - 4000) / 1000);
   console.log("time: " + time + "s");
 
-  
+
    let currentExperiment = {
       experimentID: experimentID,
-      rounds: [] 
+      rounds: []
     };
     experimentData.push(currentExperiment);
-  
+
 
   // Prepare data object for the current round
   let roundData = {
@@ -198,7 +213,7 @@ function summarizeData(data) {
       }
     }
   }
-    
+
   let averageReactionTime = totalReactionTime / rounds.length;
 
   console.log("Analysis of Experiment Data:");
