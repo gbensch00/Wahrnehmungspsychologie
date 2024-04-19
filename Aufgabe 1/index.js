@@ -3,11 +3,23 @@ let grid = document.getElementById("grid");
 // 1 Runde alles schwarz
 let round_1 = {"direction": "left", "color": "black", "searched_color": "black", "grid_size": 4, "positionX": 3, "positionY": 2}
 // 2 Runde Farben nah beieinander, es darf nur eine Kombination von Farbe + Richtung richtig sein
-let round_2 = {"direction": "left", "color": "pink", "searched_color": "red", "grid_size": 4, "positionX": 3, "positionY": 2}
+let round_2 = {"direction": "left", "color": "pink", "searched_color": "red", "grid_size": 5, "positionX": 3, "positionY": 2}
 // 3 Runde wie Runde 2 aber Starker Farbkontrast
-let round_3 = {"direction": "left", "color": "green", "searched_color": "red", "grid_size": 4, "positionX": 3, "positionY": 2}
+let round_3 = {"direction": "left", "color": "green", "searched_color": "red", "grid_size": 6, "positionX": 3, "positionY": 2}
 
-generateGrid(round_1)
+let rounds = [round_1, round_2, round_3]
+
+let current_round = 0;
+
+setUpRound(rounds[current_round])
+
+function setUpRound(round) {
+    while (grid.firstChild) {
+        grid.removeChild(grid.firstChild);
+    }
+
+    generateGrid(round);
+}
 
 function generateGrid(round) {
     for (let y = 0; y < round.grid_size; y++) {
@@ -27,6 +39,12 @@ function handleClick(event, isCorrectPosition) {
         console.log("clicked correctly");
     } else {
         console.log("you are wrong");
+    }
+    if(current_round < rounds.length -1){
+        current_round++;
+        setUpRound(rounds[current_round]);
+    } else {
+        //show results;
     }
 }
 
