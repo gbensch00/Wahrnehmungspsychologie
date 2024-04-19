@@ -1,21 +1,28 @@
 let grid = document.getElementById("grid");
+let experimentData = [];
+let experimentID = 0;
+let successfulRound = true;
+let successfulRounds = 0;
+let start;
+let end;
+
 
 // 1 Runde alles schwarz
-let round_1 = {"direction": "left", "color": ["black"], "searched_color": "black", "grid_size": 10, "positionX": 3, "positionY": 2}
+let round_1 = {"round_number": 0, "direction": "left", "color": ["black"], "searched_color": "black", "grid_size": 10, "positionX": 3, "positionY": 2}
 // 2 Runde Farben nah beieinander, es darf nur eine Kombination von Farbe + Richtung richtig sein
-let round_2 = {"direction": "down", "color": ["darkred"], "searched_color": "red", "grid_size": 10, "positionX": 4, "positionY": 3}
+let round_2 = {"round_number": 1, "direction": "down", "color": ["darkred"], "searched_color": "red", "grid_size": 10, "positionX": 4, "positionY": 3}
 
-let round_3 = {"direction": "up", "color": ["darkred", "red"], "searched_color": "red", "grid_size": 10, "positionX": 1, "positionY": 4}
+let round_3 = {"round_number": 2, "direction": "up", "color": ["darkred", "red"], "searched_color": "red", "grid_size": 10, "positionX": 1, "positionY": 4}
 // 3 Runde wie Runde 2 aber Starker Farbkontrast
-let round_4 = {"direction": "right", "color": ["green", "blue", "yellow", "red"], "searched_color": "red", "grid_size": 10, "positionX": 4, "positionY": 3}
+let round_4 = {"round_number": 3, "direction": "right", "color": ["green", "blue", "yellow", "red"], "searched_color": "red", "grid_size": 10, "positionX": 4, "positionY": 3}
 
 let rounds = [round_1, round_2, round_3, round_4]
-
 let current_round = 0;
 
 setUpRound(rounds[current_round])
 
 function setUpRound(round) {
+    
     let searched_triangle = document.getElementById("searched-triangle");
     searched_triangle.style.rotate = getDegree(round.direction) + "deg";
     searched_triangle.style.fill = round.searched_color;
@@ -29,22 +36,21 @@ function setUpRound(round) {
     function updateTimer() {
         timer.innerHTML = count.toString();
         if (count === 0) {
-            timer.style.display = "none";
+            timer.style.display = "none"; 
         }
-
         count--;
-
         if (count >= 0) {
             setTimeout(updateTimer, 1000);
         }
     }
-
     updateTimer();
-
+    start = Date.now();
     setTimeout(() => {
         generateGrid(round);
     }, 4000)
 }
+
+
 
 function generateGrid(round) {
     for (let y = 0; y < round.grid_size; y++) {
@@ -59,17 +65,23 @@ function generateGrid(round) {
     }
 }
 
-function handleClick(event, isCorrectPosition) {
-    if(isCorrectPosition) {
+async function handleClick(event, isCorrectPosition) {
+    if (isCorrectPosition) {
         console.log("clicked correctly");
+        successfulRound = true;
+        collectData(current_round);
     } else {
         console.log("you are wrong");
+        successfulRound = false;
+          collectData(current_round);
     }
     if(current_round < rounds.length -1){
         current_round++;
         setUpRound(rounds[current_round]);
     } else {
         //show results;
+        console.log("experiment done!");
+        summarizeData(experimentData);
     }
 }
 
@@ -134,4 +146,78 @@ function createSvg() {
 
     return svg;
 }
+
+
+function collectData(round) {
+  console.log("current round: " + current_round);
+  let end = Date.now();
+  let time = (((end - start) - 4000) / 1000);
+  console.log("time: " + time + "s");
+
+  
+   let currentExperiment = {
+      experimentID: experimentID,
+      rounds: [] 
+    };
+    experimentData.push(currentExperiment);
+  
+
+  // Prepare data object for the current round
+  let roundData = {
+    round: current_round,
+    reactionTime: time,
+    success: successfulRound
+  };
+
+  // Add round data to the current experiment
+  currentExperiment.rounds.push(roundData);
+
+  // Log experiment data to console
+  console.log(experimentData);
+}
+function summarizeData(data) {
+  let totalReactionTime = 0;
+  let longestReactionTime = 0;
+  let shortestReactionTime = 0;
+
+  // Iterate over each experiment
+  for (let experiment of data) {
+    // Iterate over each round in the experiment
+    for (let round of experiment.rounds) {
+        // Check if the round was successful
+        console.log("round success: " + round.success);
+      if (round.success === true) {
+        successfulRounds++;
+      }
+
+      // Add reaction time to total
+      totalReactionTime += round.reactionTime;
+
+      // Update longest reaction time if necessary
+      if (round.reactionTime > longestReactionTime) {
+        longestReactionTime = round.reactionTime;
+      }
+
+      // Update shortest reaction time if necessary
+        if (round.reactionTime < shortestReactionTime) {
+            shortestReactionTime = round.reactionTime;
+        }
+    }
+  }
+    
+  let averageReactionTime = totalReactionTime / 4;
+
+  console.log("Analysis of Experiment Data:");
+    console.log("Successful Rounds:", successfulRounds);
+    console.log("Total Reaction Time:", totalReactionTime.toFixed(2) + "s");
+  console.log("Average Reaction Time:", averageReactionTime.toFixed(2) + "s");
+  console.log("Longest Reaction Time:", longestReactionTime.toFixed(2) + "s");
+  console.log("Shortest Reaction Time:", shortestReactionTime.toFixed(2) + "s");
+}
+function measureReactionTime() {
+  // Placeholder logic to measure reaction time
+  // Return a random reaction time for demonstration purposes
+  return Math.floor(Math.random() * 5000); // Random reaction time between 0 and 5000 milliseconds
+}
+
 
